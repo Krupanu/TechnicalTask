@@ -1,9 +1,6 @@
 package com.technicaltask.dto;
 
-import com.technicaltask.model.Hotel;
-import lombok.Data;
-
-public record HotelDto(
+public record HotelSummaryResponse(
         Long id,
         String name,
         String description,
@@ -11,4 +8,3 @@ public record HotelDto(
         String phone
 ) {
 }
-
