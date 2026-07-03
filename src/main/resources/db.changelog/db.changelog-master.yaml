@@ -1,0 +1,125 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-hotels
+      author: property-view
+      changes:
+        - createTable:
+            tableName: hotels
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(2000)
+              - column:
+                  name: brand
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: house_number
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: street
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: city
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: country
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: post_code
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: check_in
+                  type: varchar(16)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: check_out
+                  type: varchar(16)
+        - createIndex:
+            tableName: hotels
+            indexName: idx_hotels_name
+            columns:
+              - column:
+                  name: name
+        - createIndex:
+            tableName: hotels
+            indexName: idx_hotels_brand
+            columns:
+              - column:
+                  name: brand
+        - createIndex:
+            tableName: hotels
+            indexName: idx_hotels_city
+            columns:
+              - column:
+                  name: city
+        - createIndex:
+            tableName: hotels
+            indexName: idx_hotels_country
+            columns:
+              - column:
+                  name: country
+  - changeSet:
+      id: 002-create-hotel-amenities
+      author: property-view
+      changes:
+        - createTable:
+            tableName: hotel_amenities
+            columns:
+              - column:
+                  name: hotel_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amenity
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: hotel_amenities
+            baseColumnNames: hotel_id
+            constraintName: fk_hotel_amenities_hotel
+            referencedTableName: hotels
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - createIndex:
+            tableName: hotel_amenities
+            indexName: idx_hotel_amenities_amenity
+            columns:
+              - column:
+                  name: amenity

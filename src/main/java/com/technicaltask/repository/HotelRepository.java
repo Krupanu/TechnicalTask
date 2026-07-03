@@ -8,5 +8,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
 public interface HotelRepository extends JpaRepository<Hotel, Long>{
-    String getAddress();
 }
