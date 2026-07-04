@@ -1,7 +1,5 @@
 package com.technicaltask.repository;
 
-import com.technicaltask.dto.CreateHotelRequest;
-import com.technicaltask.dto.HotelSummaryResponse;
 import com.technicaltask.model.Hotel;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

@@ -7,6 +7,7 @@ import com.technicaltask.dto.SearchCriteria;
 import com.technicaltask.model.Hotel;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface HotelService {
@@ -15,4 +16,5 @@ public interface HotelService {
     HotelSummaryResponse createHotel(CreateHotelRequest hotel);
     List<HotelSummaryResponse> search(SearchCriteria criteria);
     HotelDetailsResponse addAmenities(Long id, List<String> amenities);
+    Map<String, Long> getHistogram(String parameter);
 }

@@ -2,6 +2,7 @@ package com.technicaltask.service.serviceImpl;
 
 import com.technicaltask.dto.*;
 import com.technicaltask.exception.HotelNotFoundException;
+import com.technicaltask.exception.InvalidHistogramParameterException;
 import com.technicaltask.mapper.HotelMapper;
 import com.technicaltask.model.Hotel;
 import com.technicaltask.repository.HotelRepository;
@@ -9,9 +10,10 @@ import com.technicaltask.service.HotelService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class HotelServiceImpl implements HotelService {
@@ -74,5 +76,31 @@ public class HotelServiceImpl implements HotelService {
 
     private Hotel getHotelEntity(Long id) {
         return hotelRepository.findById(id).orElseThrow(() -> new HotelNotFoundException(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Long> getHistogram(String parameter) {
+        String normalizedParameter = parameter == null ? "" : parameter.toLowerCase(Locale.ROOT);
+        List<Hotel> hotels = hotelRepository.findAll();
+        Stream<String> values = switch (normalizedParameter) {
+            case "brand" -> hotels.stream().map(Hotel::getBrand);
+            case "city" -> hotels.stream().map(hotel -> hotel.getAddress().getCity());
+            case "country" -> hotels.stream().map(hotel -> hotel.getAddress().getCountry());
+            case "amenities" -> hotels.stream().flatMap(hotel -> hotel.getAmenities().stream());
+            default -> throw new InvalidHistogramParameterException(parameter);
+        };
+        return values.filter(Objects::nonNull)
+                .filter(value -> !value.isBlank())
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByKey(Comparator.naturalOrder()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (first, second) -> first,
+                        LinkedHashMap::new
+                ));
     }
 }

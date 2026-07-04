@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -57,5 +58,10 @@ public class HotelController {
             @Valid @RequestBody @NotEmpty List<@NotBlank String> amenities
     ) {
         return hotelService.addAmenities(id, amenities);
+    }
+
+    @GetMapping("/histogram/{param}")
+    public Map<String, Long> getHistogram(@PathVariable String param) {
+        return hotelService.getHistogram(param);
     }
 }
