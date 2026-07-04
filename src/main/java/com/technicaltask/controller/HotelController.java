@@ -4,6 +4,8 @@ import com.technicaltask.dto.CreateHotelRequest;
 import com.technicaltask.dto.HotelDetailsResponse;
 import com.technicaltask.dto.HotelSummaryResponse;
 import com.technicaltask.dto.SearchCriteria;
+import com.technicaltask.exception.HotelNotFoundException;
+import com.technicaltask.mapper.HotelMapper;
 import com.technicaltask.model.Hotel;
 import com.technicaltask.service.serviceImpl.HotelServiceImpl;
 import jakarta.validation.Valid;
@@ -24,6 +26,7 @@ import java.util.Optional;
 public class HotelController {
 
     private final HotelServiceImpl hotelService;
+    private final HotelMapper hotelMapper;
 
     @GetMapping("/hotels")
     public List<HotelSummaryResponse> getAllHotels() {
@@ -31,13 +34,15 @@ public class HotelController {
     }
 
     @GetMapping("/hotels/{id}")
-    public Optional<Hotel> getHotelById(@PathVariable Long id) {
-        return hotelService.getHotelById(id);
+    public HotelDetailsResponse getHotelById(@PathVariable Long id) {
+        return hotelService.getHotelById(id)
+                .map(hotelMapper::toDetailsResponse)
+                .orElseThrow(() -> new HotelNotFoundException(id));
     }
 
     @PostMapping("/hotels")
     @ResponseStatus(HttpStatus.CREATED)
-    public HotelSummaryResponse createHotel(@RequestBody CreateHotelRequest hotel) {
+    public HotelSummaryResponse createHotel(@RequestBody @Valid CreateHotelRequest hotel) {
         return hotelService.createHotel(hotel);
     }
 

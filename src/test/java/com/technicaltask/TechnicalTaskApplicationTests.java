@@ -36,7 +36,7 @@ class HotelControllerIntegrationTest {
     void shouldCreateHotelAndReturnDetails() throws Exception {
         Long hotelId = createHotel(defaultHotelJson("DoubleTree by Hilton Minsk", "Hilton", "Minsk", "Belarus"));
 
-        mockMvc.perform(get("/hotels/{id}", hotelId))
+        mockMvc.perform(get("/property-view/hotels/{id}", hotelId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(hotelId))
                 .andExpect(jsonPath("$.name").value("DoubleTree by Hilton Minsk"))
@@ -53,12 +53,12 @@ class HotelControllerIntegrationTest {
         createHotel(defaultHotelJson("Warsaw Center Hotel", "Mercure", "Warsaw", "Poland"));
         addAmenities(minskHotelId, "[\"Free WiFi\",\"Fitness center\"]");
 
-        mockMvc.perform(get("/search").param("city", "minsk"))
+        mockMvc.perform(get("/property-view/search").param("city", "minsk"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].name").value("DoubleTree by Hilton Minsk"));
 
-        mockMvc.perform(get("/search").param("amenities", "wifi"))
+        mockMvc.perform(get("/property-view/search").param("amenities", "wifi"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id").value(minskHotelId));
@@ -72,12 +72,12 @@ class HotelControllerIntegrationTest {
         addAmenities(firstHotelId, "[\"Free WiFi\",\"Fitness center\"]");
         addAmenities(secondHotelId, "[\"Free WiFi\"]");
 
-        mockMvc.perform(get("/histogram/city"))
+        mockMvc.perform(get("/property-view/histogram/city"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.Minsk").value(2))
                 .andExpect(jsonPath("$.Warsaw").value(1));
 
-        mockMvc.perform(get("/histogram/amenities"))
+        mockMvc.perform(get("/property-view/histogram/amenities"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$['Free WiFi']").value(2))
                 .andExpect(jsonPath("$['Fitness center']").value(1));
@@ -85,7 +85,7 @@ class HotelControllerIntegrationTest {
 
     @Test
     void shouldReturnValidationErrorForInvalidRequest() throws Exception {
-        mockMvc.perform(post("/hotels")
+        mockMvc.perform(post("/property-view/hotels")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isBadRequest())
@@ -94,13 +94,13 @@ class HotelControllerIntegrationTest {
 
     @Test
     void shouldReturnNotFoundForUnknownHotel() throws Exception {
-        mockMvc.perform(get("/hotels/{id}", 999))
+        mockMvc.perform(get("/property-view/hotels/{id}", 999))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message", containsString("999")));
     }
 
     private Long createHotel(String json) throws Exception {
-        MvcResult result = mockMvc.perform(post("/hotels")
+        MvcResult result = mockMvc.perform(post("/property-view/hotels")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated())
@@ -113,7 +113,7 @@ class HotelControllerIntegrationTest {
     }
 
     private void addAmenities(Long hotelId, String json) throws Exception {
-        mockMvc.perform(post("/hotels/{id}/amenities", hotelId)
+        mockMvc.perform(post("/property-view/hotels/{id}/amenities", hotelId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk());
