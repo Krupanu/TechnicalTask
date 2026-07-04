@@ -1,10 +1,14 @@
 package com.technicaltask.controller;
 
 import com.technicaltask.dto.CreateHotelRequest;
+import com.technicaltask.dto.HotelDetailsResponse;
 import com.technicaltask.dto.HotelSummaryResponse;
 import com.technicaltask.dto.SearchCriteria;
 import com.technicaltask.model.Hotel;
 import com.technicaltask.service.serviceImpl.HotelServiceImpl;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -45,5 +49,13 @@ public class HotelController {
             @RequestParam(required = false) List<String> amenities
     ) {
         return hotelService.search(new SearchCriteria(name, brand, city, country, amenities));
+    }
+
+    @PostMapping("/hotels/{id}/amenities")
+    public HotelDetailsResponse addAmenities(
+            @PathVariable Long id,
+            @Valid @RequestBody @NotEmpty List<@NotBlank String> amenities
+    ) {
+        return hotelService.addAmenities(id, amenities);
     }
 }

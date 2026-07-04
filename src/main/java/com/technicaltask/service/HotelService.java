@@ -14,4 +14,5 @@ public interface HotelService {
     Optional<Hotel> getHotelById(Long id);
     HotelSummaryResponse createHotel(CreateHotelRequest hotel);
     List<HotelSummaryResponse> search(SearchCriteria criteria);
+    HotelDetailsResponse addAmenities(Long id, List<String> amenities);
 }

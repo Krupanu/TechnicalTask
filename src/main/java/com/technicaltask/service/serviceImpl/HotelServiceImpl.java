@@ -1,6 +1,7 @@
 package com.technicaltask.service.serviceImpl;
 
 import com.technicaltask.dto.*;
+import com.technicaltask.exception.HotelNotFoundException;
 import com.technicaltask.mapper.HotelMapper;
 import com.technicaltask.model.Hotel;
 import com.technicaltask.repository.HotelRepository;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -55,5 +57,22 @@ public class HotelServiceImpl implements HotelService {
                 )).stream()
                 .map(hotelMapper::toSummaryResponse)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public HotelDetailsResponse addAmenities(Long id, List<String> amenities) {
+        Hotel hotel = getHotelEntity(id);
+        amenities.stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(value -> !value.isBlank())
+                .filter(value -> !hotel.getAmenities().contains(value))
+                .forEach(hotel.getAmenities()::add);
+        return hotelMapper.toDetailsResponse(hotel);
+    }
+
+    private Hotel getHotelEntity(Long id) {
+        return hotelRepository.findById(id).orElseThrow(() -> new HotelNotFoundException(id));
     }
 }
